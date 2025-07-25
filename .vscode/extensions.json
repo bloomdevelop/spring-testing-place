@@ -1,6 +1,11 @@
 {
 	"recommendations": [
 		"roblox-ts.vscode-roblox-ts",
-		"dbaeumer.vscode-eslint"
+		"dbaeumer.vscode-eslint",
+		"JohnnyMorganz.luau-lsp",
+		"JohnnyMorganz.stylua",
+		"Kampfkarren.selene-vscode",
+		"evaera.vscode-rojo",
+		"Ashp116.luau-color-wheel"
 	]
 }
