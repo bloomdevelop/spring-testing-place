@@ -1,0 +1,7 @@
+# Typescript/Luau related files
+/node_modules
+/out
+/include
+*.tsbuildinfo
+# Wally Packages
+Packages
