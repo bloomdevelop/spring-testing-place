@@ -161,7 +161,7 @@ function PlayerListComponent() {
 const handle = new Instance("ScreenGui");
 handle.Name = "PlayerListHandle";
 handle.ResetOnSpawn = false;
-handle.Parent = LocalPlayer.FindFirstChildOfClass("PlayerGui")
+handle.Parent = LocalPlayer.FindFirstChildOfClass("PlayerGui");
 
 const root = createRoot(handle);
 root.render(<PlayerListComponent />);
