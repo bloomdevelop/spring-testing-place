@@ -10,8 +10,7 @@ function InputListComponent() {
         AutomaticSize: Enum.AutomaticSize.Y,
         Position: new UDim2(1, -20, 1, -20),
         AnchorPoint: new Vector2(1, 1),
-        BackgroundColor3: new Color3(0, 0, 0),
-        BackgroundTransparency: 0.2,
+        BackgroundTransparency: 1,
         BorderSizePixel: 0,
     } as Frame;
 
@@ -70,10 +69,12 @@ function InputListComponent() {
                         Position={new UDim2(0, 50, 0, 0)}
                         BackgroundTransparency={1}
                         TextColor3={new Color3(1, 1, 1)}
-                        Font={Enum.Font.Gotham}
-                        TextSize={14}
+                        Font={Enum.Font.BuilderSans}
+                        TextSize={18}
                         TextXAlignment={Enum.TextXAlignment.Left}
-                    />
+                    >
+                        <uistroke ApplyStrokeMode={'Contextual'} Color={new Color3(0, 0, 0)} Thickness={1} />
+                    </textlabel>
                 </frame>
             ))}
         </frame>
