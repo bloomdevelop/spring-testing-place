@@ -5,3 +5,7 @@
 *.tsbuildinfo
 # Wally Packages
 Packages
+# Selene
+roblox.yml
+# Sourcemap
+sourcemap.json
