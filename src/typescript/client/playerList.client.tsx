@@ -67,14 +67,20 @@ function PlayerListComponent() {
 
     const [players, setPlayers] = useState<Player[]>(() => Players.GetPlayers());
 
-    // Group players by team if teams exist
-    const teams = new Map<Team | undefined, Player[]>();
+    // Group players by their Team. Players without a team are tracked separately.
+    const teamMap = new Map<Team, Player[]>();
+    const noTeamPlayers: Player[] = [];
     let hasTeams = false;
+
     for (const player of players) {
         const team = player.Team;
-        if (team !== undefined && team !== undefined) hasTeams = true;
-        if (!teams.has(team)) teams.set(team, []);
-        teams.get(team)!.push(player);
+        if (team) {
+            if (!teamMap.has(team)) teamMap.set(team, []);
+            teamMap.get(team)!.push(player);
+            hasTeams = true;
+        } else {
+            noTeamPlayers.push(player);
+        }
     }
 
     useEffect(() => {
@@ -119,23 +125,26 @@ function PlayerListComponent() {
                         This is getting quite limited due how roblox-ts compiles typescript to lua/luau.
                     */
                     const arr: [Team | undefined, Player[]][] = [];
-                    teams.forEach((teamPlayers, team) => {
+                    teamMap.forEach((teamPlayers, team) => {
                         arr.push([team, teamPlayers]);
                     });
+                    if (noTeamPlayers.size() > 0) {
+                        arr.push([undefined, noTeamPlayers]);
+                    }
                     return arr.map(([team, teamPlayers]: [Team | undefined, Player[]]) => (
                         <frame
                             key={team ? team.Name : "NoTeam"}
                             Size={new UDim2(1, 0, 0, 0)}
                             BackgroundTransparency={0.4}
-                            BackgroundColor3={team?.TeamColor.Color || new Color3(1, 1, 1)}
+                            BackgroundColor3={team && team.TeamColor ? team.TeamColor.Color : new Color3(1, 1, 1)}
                             AutomaticSize={Enum.AutomaticSize.Y}
                             BorderSizePixel={0}
                         >
                             <uicorner CornerRadius={new UDim(0, 5)} />
                             <uilistlayout {...UIListLayoutProperty} />
                             <uipadding {...UIPaddingProperty} />
-                            {team && <textlabel
-                                Text={team.Name}
+                            <textlabel
+                                Text={team ? team.Name : "No Team"}
                                 Size={new UDim2(1, 0, 0, 24)}
                                 BackgroundTransparency={1}
                                 TextColor3={new Color3(1, 1, 1)}
@@ -143,7 +152,7 @@ function PlayerListComponent() {
                                 Font={Enum.Font.BuilderSans}
                             >
                                 <uistroke Color={new Color3(0, 0, 0)} ApplyStrokeMode={"Contextual"} Thickness={1} />
-                            </textlabel>}
+                            </textlabel>
                             {teamPlayers.map((player) => (
                                 <PlayerContainer key={player.UserId} player={player} />
                             ))}
