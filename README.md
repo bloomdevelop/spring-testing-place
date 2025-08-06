@@ -16,7 +16,7 @@ This is the codebase for my testing place.
 
 ## Developing
 
-> [!NOTE] 
+> [!NOTE]
 > I recommend using Visual Studio Code for working with the codebase. Since the codebase contains `.vscode` directory to allow extension recommendations to allow setting things up easily and quick.
 
 ### For Working with TypeScript (Required for roblox-ts to be able to sync Luau files to Studio)
@@ -41,6 +41,7 @@ Please install [`aftman`](https://github.com/LPGhatguy/aftman) (either via Githu
 aftman add UpliftGames/wally # to install required tools
 # Then run wally install to instal dependencies like jsdotlua/react and jsdotlua/react-roblox
 ```
+
 ### Starting the compiler
 
 To run the compiler run on the following:
