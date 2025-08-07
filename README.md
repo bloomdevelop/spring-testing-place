@@ -2,6 +2,8 @@
 
 This is the codebase for my testing place.
 
+Licensed with MIT ([More Info](https://choosealicense.com/licenses/mit/))
+
 ## File structures
 
 ```bash
