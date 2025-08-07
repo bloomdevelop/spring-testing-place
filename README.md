@@ -19,6 +19,30 @@ This is the codebase for my testing place.
 > [!NOTE]
 > I recommend using Visual Studio Code for working with the codebase. Since the codebase contains `.vscode` directory to allow extension recommendations to allow setting things up easily and quick.
 
+### Requirements
+
+- `just` (Optional, if you want to confgure it manually)
+- `aftman`
+- `pnpm`
+- Visual Studio Code (recommended) or other editors like Zed, Vim, etc...
+
+### Configuring
+
+I use `just` to manage tasks easily, to use this please install in the following command if you don't have it installed:
+
+```bash
+# via NPM
+npm install -g rust-just #
+
+# via DNF (Fedora)
+dnf install just
+# Please check on readme at https://github.com/casey/just
+# There's more distrubtion which I'm not going to list
+```
+
+> [!NOTE]
+> You can skip both TypeScript and Luau since `just` does this thing.
+
 ### For Working with TypeScript (Required for roblox-ts to be able to sync Luau files to Studio)
 
 `pnpm` is required to work with TypeScript files you can install on the [installation guide](https://pnpm.io/installation), then configure the enviroment for runtime (I recommend to use LTS version instead of latest)
@@ -42,12 +66,10 @@ aftman add UpliftGames/wally # to install required tools
 # Then run wally install to instal dependencies like jsdotlua/react and jsdotlua/react-roblox
 ```
 
-### Starting the compiler
+### Starting the compiler and serve via Rojo
 
-To run the compiler run on the following:
+To start the compiler and sync to Studio, simply run this command:
 
 ```bash
-pnpm watch
+just dev
 ```
-
-Nothing else to do anyway, all it does is compile typescript codes into lua/luau (important to be synced to Studio)
