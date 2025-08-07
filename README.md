@@ -1,8 +1,5 @@
 # Spring's Testing Place
 
-> [!WARNING]
-> This repository doesn't have any license yet, please be careful when using.
-
 This is the codebase for my testing place.
 
 ## File structures
