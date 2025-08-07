@@ -3,10 +3,10 @@ local TweenService = game:GetService("TweenService")
 
 -- Settings
 local DAY_LENGTH_SECONDS = 600
-local NIGHT_COLOR = Color3.fromRGB(20, 20, 40)
+local NIGHT_COLOR = Color3.fromRGB(8, 8, 14)
 local DAY_COLOR = Color3.fromRGB(255, 255, 255)
-local SUNRISE_COLOR = Color3.fromRGB(255, 170, 100)
-local SUNSET_COLOR = Color3.fromRGB(255, 120, 80)
+local SUNRISE_COLOR = Color3.fromRGB(255, 150, 64)
+local SUNSET_COLOR = Color3.fromRGB(255, 105, 59)
 
 local function lerpColor(c1, c2, t)
 	return Color3.new(c1.R + (c2.R - c1.R) * t, c1.G + (c2.G - c1.G) * t, c1.B + (c2.B - c1.B) * t)
@@ -72,7 +72,7 @@ local function getAtmosphereColor(hour)
 		local t = (hour - 20) / 2
 		return lerpColor(Color3.fromRGB(255, 120, 80), Color3.fromRGB(80, 80, 120), t)
 	else -- Night
-		return Color3.fromRGB(80, 80, 120)
+		return Color3.fromRGB(0, 0, 0)
 	end
 end
 
