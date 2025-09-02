@@ -15,7 +15,7 @@ end
 
 -- Config
 local DAY_LENGTH = 600
-local START_HOUR = 5 -- start near sunrise for easier testing
+local START_HOUR = 10 -- start near sunrise for easier testing
 local TURBIDITY = 2.0
 local RAYLEIGH_SCALE = 0.8
 local MIE_SCALE = 0.7
