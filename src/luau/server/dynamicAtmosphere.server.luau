@@ -153,8 +153,8 @@ local function updateAtmosphere()
 	-- DEBUG: uncomment to see values in Output while testing
 	-- print("sunDir.Y", sunDir.Y, "cosZenith", cosZenith, "aboveHorizon", aboveHorizon)
 
-	local sunRayIntensity = clamp(cosZenith, 0, 1) * 0.65
-	local sunRaySpread = clamp(cosZenith, 0, 1) * 0.6
+	local sunRayIntensity = (clamp(cosZenith, 0, 1) ^ 0.6) * 0.7
+	local sunRaySpread = (clamp(cosZenith, 0, 1) ^ 0.4) * 0.8
 
 	sunRays.Intensity = sunRayIntensity
 	sunRays.Spread = sunRaySpread
