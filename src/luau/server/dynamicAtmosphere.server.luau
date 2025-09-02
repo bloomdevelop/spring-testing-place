@@ -7,6 +7,12 @@ if not atmosphere then
 	atmosphere.Parent = Lighting
 end
 
+local sunRays = Lighting:FindFirstChildOfClass("SunRaysEffect")
+if not sunRays then
+	sunRays = Instance.new("SunRaysEffect")
+	sunRays.Parent = Lighting
+end
+
 -- Config
 local DAY_LENGTH = 600
 local START_HOUR = 5 -- start near sunrise for easier testing
@@ -17,8 +23,8 @@ local OZONE_STRENGTH = 0.9
 local EXPOSURE = 1.0
 local NIGHT_DENSITY = 0.6
 local DAY_DENSITY = 0.12
-local NIGHT_BRIGHTNESS = 0.25
-local DAY_BRIGHTNESS = 2.6
+local NIGHT_BRIGHTNESS = 0.0
+local DAY_BRIGHTNESS = 5.0
 local SMOOTHING = 6.0 -- larger = faster response
 
 -- Wavelengths (m)
@@ -146,6 +152,12 @@ local function updateAtmosphere()
 
 	-- DEBUG: uncomment to see values in Output while testing
 	-- print("sunDir.Y", sunDir.Y, "cosZenith", cosZenith, "aboveHorizon", aboveHorizon)
+
+	local sunRayIntensity = clamp(cosZenith, 0, 1) * 0.65
+	local sunRaySpread = clamp(cosZenith, 0, 1) * 0.6
+
+	sunRays.Intensity = sunRayIntensity
+	sunRays.Spread = sunRaySpread
 end
 
 -- initial update and loop
