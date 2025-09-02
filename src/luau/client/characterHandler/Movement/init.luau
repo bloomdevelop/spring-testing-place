@@ -104,7 +104,7 @@ function Process:Add(Character: Model, IgnoreList: { Instance }): ()
 
 		RootJoint.C0 = RootJoint.C0:Lerp(
 			IK.C0s.RootJoint * CFrame.Angles(-math.rad(Direction.Z * (6 * 2)), -math.rad(Direction.X * 8), 0),
-			0.05
+			0.2
 		)
 		RightHip.C0 = RightHip.C0:Lerp(IK:LegIK(`Right`, Attachments.RightLegEnd.WorldPosition), 0.13)
 		LeftHip.C0 = LeftHip.C0:Lerp(IK:LegIK(`Left`, Attachments.LeftLegEnd.WorldPosition), 0.13)
