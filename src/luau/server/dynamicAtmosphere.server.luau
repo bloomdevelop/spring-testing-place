@@ -16,12 +16,12 @@ end
 -- Config
 local DAY_LENGTH = 600
 local START_HOUR = 10 -- start near sunrise for easier testing
-local TURBIDITY = 2.0
+local TURBIDITY = 10.0
 local RAYLEIGH_SCALE = 0.8
 local MIE_SCALE = 0.7
-local OZONE_STRENGTH = 0.9
+local OZONE_STRENGTH = 0.5
 local EXPOSURE = 1.0
-local NIGHT_DENSITY = 0.6
+local NIGHT_DENSITY = 0.8
 local DAY_DENSITY = 0.12
 local NIGHT_BRIGHTNESS = 0.0
 local DAY_BRIGHTNESS = 5.0
