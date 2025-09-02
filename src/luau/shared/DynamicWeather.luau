@@ -3,6 +3,7 @@
 
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
 
 export type WeatherProfile = {
 	Cover: number,
@@ -54,6 +55,32 @@ local function lerpColor(a: Color3, b: Color3, t: number): Color3
 	)
 end
 
+-- Altitude-based adjustments
+-- Define altitude ranges and their effects on weather
+local ALTITUDE_LOW = 0 -- Sea level
+local ALTITUDE_MAX = 2000 -- Maximum altitude for full effect
+
+-- Function to get altitude-based modifiers
+local function getAltitudeModifiers(altitude: number): {Cover: number, Density: number, Color: Color3}
+	-- Normalize altitude between 0 and 1 for interpolation
+	local normalizedAlt = math.clamp((altitude - ALTITUDE_LOW) / (ALTITUDE_MAX - ALTITUDE_LOW), 0, 1)
+
+	-- At higher altitudes: reduce cloud cover and density, make sky bluer (less atmospheric scattering)
+	local coverModifier = 1 - (normalizedAlt * 0.3) -- Reduce cover by up to 30%
+	local densityModifier = 1 - (normalizedAlt * 0.4) -- Reduce density by up to 40%
+	local colorModifier = Color3.new(
+		lerp(1, 0.8, normalizedAlt), -- Slightly less red
+		lerp(1, 0.9, normalizedAlt), -- Slightly less green
+		lerp(1, 1.1, normalizedAlt)  -- More blue for clearer sky
+	)
+
+	return {
+		Cover = coverModifier,
+		Density = densityModifier,
+		Color = colorModifier
+	}
+end
+
 -- Public API
 function WeatherSystem:GetWeather(): WeatherType
 	return currentWeather
@@ -89,6 +116,25 @@ end
 -- Update loop
 RunService.Heartbeat:Connect(function(dt: number)
 	cycleWeather(dt)
+
+	-- Apply altitude-based adjustments
+	local localPlayer = Players.LocalPlayer
+	if localPlayer and localPlayer.Character then
+		local humanoidRootPart = localPlayer.Character:FindFirstChild("HumanoidRootPart")
+		if humanoidRootPart then
+			local altitude = humanoidRootPart.Position.Y
+			local modifiers = getAltitudeModifiers(altitude)
+
+			-- Adjust target values based on altitude
+			target.Cover = target.Cover * modifiers.Cover
+			target.Density = target.Density * modifiers.Density
+			target.Color = Color3.new(
+				target.Color.R * modifiers.Color.R,
+				target.Color.G * modifiers.Color.G,
+				target.Color.B * modifiers.Color.B
+			)
+		end
+	end
 
 	cumulus.Cover = lerp(cumulus.Cover, target.Cover, smoothing)
 	cumulus.Density = lerp(cumulus.Density, target.Density, smoothing)

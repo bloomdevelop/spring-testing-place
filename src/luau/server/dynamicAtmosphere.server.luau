@@ -1,5 +1,6 @@
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
 
 local atmosphere = Lighting:FindFirstChildOfClass("Atmosphere")
 if not atmosphere then
@@ -15,7 +16,7 @@ end
 
 -- Config
 local DAY_LENGTH = 600
-local START_HOUR = 10 -- start near sunrise for easier testing
+local START_HOUR = 5 -- start near sunrise for easier testing
 local TURBIDITY = 3.0
 local RAYLEIGH_SCALE = 0.8
 local MIE_SCALE = 0.7
@@ -27,6 +28,7 @@ local NIGHT_BRIGHTNESS = 0.0
 local DAY_BRIGHTNESS = 5.0
 local SMOOTHING = 6.0 -- larger = faster response
 
+
 -- Wavelengths (m)
 local lambda = { R = 680e-9, G = 550e-9, B = 440e-9 }
 local function clamp(x, a, b)
@@ -34,6 +36,44 @@ local function clamp(x, a, b)
 end
 local function invPow(l, p)
 	return 1 / (l ^ p)
+end
+
+-- Altitude-based adjustments
+local ALTITUDE_LOW = 0 -- Sea level
+local ALTITUDE_MAX = 2000 -- Maximum altitude for full effect
+
+-- Function to get average player altitude
+local function getAveragePlayerAltitude()
+	local totalAltitude = 0
+	local playerCount = 0
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player.Character then
+			local humanoidRootPart = player.Character:FindFirstChild("HumanoidRootPart")
+			if humanoidRootPart then
+				totalAltitude = totalAltitude + humanoidRootPart.Position.Y
+				playerCount = playerCount + 1
+			end
+		end
+	end
+	return playerCount > 0 and totalAltitude / playerCount or 0
+end
+
+-- Function to get altitude-based modifiers for atmosphere
+local function getAtmosphereModifiers(altitude: number)
+	local normalizedAlt = clamp((altitude - ALTITUDE_LOW) / (ALTITUDE_MAX - ALTITUDE_LOW), 0, 1)
+
+	-- At higher altitudes: reduce density and haze, adjust glare, darken color for space effect
+	local densityModifier = 1 - (normalizedAlt * 0.5) -- Reduce density by up to 50%
+	local hazeModifier = 1 - (normalizedAlt * 0.3) -- Reduce haze by up to 30%
+	local glareModifier = 1 + (normalizedAlt * 0.2) -- Increase glare by up to 20%
+	local colorDarkenFactor = 1 - (normalizedAlt * 0.8) -- Darken color by up to 80% towards black
+
+	return {
+		Density = densityModifier,
+		Haze = hazeModifier,
+		Glare = glareModifier,
+		ColorDarken = colorDarkenFactor
+	}
 end
 
 local rayVec = Vector3.new(invPow(lambda.R, 4), invPow(lambda.G, 4), invPow(lambda.B, 4))
@@ -121,9 +161,9 @@ local function updateAtmosphere()
 	local sunsetBoost = (1 - math.abs(cosZenith))
 
 	local colorVec = Vector3.new(
-		combinedR * (0.6 * dayWeight + 0.8 * sunsetBoost),
-		combinedG * (0.8 * dayWeight + 0.6 * sunsetBoost),
-		combinedB * (1.0 * dayWeight + 0.2 * sunsetBoost)
+		combinedR * (0.6 * dayWeight + 1.5 * sunsetBoost),  -- Increased red for Earth-like sunset
+		combinedG * (0.8 * dayWeight + 0.9 * sunsetBoost),  -- Moderate green boost
+		combinedB * (1.0 * dayWeight + 0.05 * sunsetBoost)  -- Reduced blue for warmer sunset
 	)
 
 	local mapped = tonemap(colorVec * EXPOSURE, EXPOSURE)
@@ -140,12 +180,17 @@ local function updateAtmosphere()
 	local t = 1 - math.exp(-SMOOTHING * dt) -- frame-rate independent lerp factor
 	lastColor = lastColor:Lerp(normalized, t)
 
-	atmosphere.Color = Color3.new(lastColor.X, lastColor.Y, lastColor.Z)
+	-- Apply altitude-based adjustments
+	local averageAltitude = getAveragePlayerAltitude()
+	local modifiers = getAtmosphereModifiers(averageAltitude)
 
-	atmosphere.Decay = Color3.fromRGB(180, 200, 220):Lerp(Color3.fromRGB(30, 30, 60), clamp(1 - cosZenith, 0, 1))
-	atmosphere.Density = lerp(NIGHT_DENSITY, DAY_DENSITY, clamp(cosZenith, 0, 1))
-	atmosphere.Haze = 0.8 + (1 - math.abs(cosZenith)) * 3.2 * TURBIDITY
-	atmosphere.Glare = clamp((cosZenith > 0 and math.pow(cosZenith, 0.6) or 0) * 0.6, 0, 3)
+	atmosphere.Color = Color3.new(lastColor.X, lastColor.Y, lastColor.Z):Lerp(Color3.new(0, 0, 0), 1 - modifiers.ColorDarken)
+
+	atmosphere.Decay = Color3.fromRGB(180, 200, 220):Lerp(Color3.fromRGB(255, 150, 50), clamp(1 - cosZenith, 0, 1))  -- Orange sunset decay
+
+	atmosphere.Density = lerp(NIGHT_DENSITY, DAY_DENSITY, clamp(cosZenith, 0, 1)) * modifiers.Density
+	atmosphere.Haze = (0.8 + (1 - math.abs(cosZenith)) * 3.2 * TURBIDITY) * modifiers.Haze
+	atmosphere.Glare = clamp((cosZenith > 0 and math.pow(cosZenith, 0.6) or 0) * 0.6, 0, 3) * modifiers.Glare
 
 	Lighting.Brightness = lerp(NIGHT_BRIGHTNESS, DAY_BRIGHTNESS, math.pow(clamp(cosZenith, 0, 1), 0.7))
 	Lighting.OutdoorAmbient = atmosphere.Color:lerp(Color3.fromRGB(20, 20, 40), 0.45)
