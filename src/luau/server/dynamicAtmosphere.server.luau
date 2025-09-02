@@ -16,7 +16,7 @@ end
 
 -- Config
 local DAY_LENGTH = 600
-local START_HOUR = 5 -- start near sunrise for easier testing
+local START_HOUR = 6 -- start near sunrise for easier testing
 local TURBIDITY = 3.0
 local RAYLEIGH_SCALE = 0.8
 local MIE_SCALE = 0.7
@@ -193,12 +193,13 @@ local function updateAtmosphere()
 	atmosphere.Glare = clamp((cosZenith > 0 and math.pow(cosZenith, 0.6) or 0) * 0.6, 0, 3) * modifiers.Glare
 
 	Lighting.Brightness = lerp(NIGHT_BRIGHTNESS, DAY_BRIGHTNESS, math.pow(clamp(cosZenith, 0, 1), 0.7))
-	Lighting.OutdoorAmbient = atmosphere.Color:lerp(Color3.fromRGB(20, 20, 40), 0.45)
+	local ambientLerp = lerp(0.8, 0.2, clamp(cosZenith, 0, 1))
+	Lighting.OutdoorAmbient = atmosphere.Color:Lerp(Color3.fromRGB(20, 20, 40), ambientLerp)
 
 	-- DEBUG: uncomment to see values in Output while testing
 	-- print("sunDir.Y", sunDir.Y, "cosZenith", cosZenith, "aboveHorizon", aboveHorizon)
 
-	local sunRayIntensity = (clamp(cosZenith, 0, 1) ^ 0.6) * 0.7
+	local sunRayIntensity = (clamp(cosZenith, 0, 1) ^ 0.6) * 0.5
 	local sunRaySpread = (clamp(cosZenith, 0, 1) ^ 0.4) * 0.8
 
 	sunRays.Intensity = sunRayIntensity

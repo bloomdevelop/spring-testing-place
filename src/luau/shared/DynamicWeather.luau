@@ -11,7 +11,7 @@ export type WeatherProfile = {
 	Color: Color3,
 }
 
-export type WeatherType = "Clear" | "Partly" | "Overcast" | "Storm"
+export type WeatherType = "Clear" | "Partly" | "Overcast" | "Storm" | "Foggy" | "Rainy" | "Snowy" | "Windy" | "Drizzle" | "Thunderstorm" | "Sunny" | "Hazy"
 
 export type WeatherSystem = {
 	SetWeather: (self: WeatherSystem, type: WeatherType) -> (),
@@ -40,6 +40,14 @@ local profiles: {[WeatherType]: WeatherProfile} = {
 	Partly = {Cover = 0.4, Density = 0.6, Color = Color3.fromRGB(220,220,230)},
 	Overcast = {Cover = 0.8, Density = 0.9, Color = Color3.fromRGB(200,200,210)},
 	Storm = {Cover = 1.0, Density = 1.0, Color = Color3.fromRGB(160,170,180)},
+	Foggy = {Cover = 0.9, Density = 1.0, Color = Color3.fromRGB(240,240,250)},  -- Thick fog
+	Rainy = {Cover = 0.9, Density = 0.8, Color = Color3.fromRGB(180,190,200)},  -- Rain clouds
+	Snowy = {Cover = 0.7, Density = 0.9, Color = Color3.fromRGB(250,250,255)},  -- Snowy white
+	Windy = {Cover = 0.3, Density = 0.4, Color = Color3.fromRGB(210,220,240)},  -- Light clouds, windy
+	Drizzle = {Cover = 0.6, Density = 0.7, Color = Color3.fromRGB(190,200,210)},  -- Light rain
+	Thunderstorm = {Cover = 1.0, Density = 1.0, Color = Color3.fromRGB(140,150,160)},  -- Dark storm
+	Sunny = {Cover = 0.0, Density = 0.1, Color = Color3.new(1,1,1)},  -- No clouds
+	Hazy = {Cover = 0.5, Density = 0.6, Color = Color3.fromRGB(230,230,240)},  -- Light haze
 }
 
 -- Utility
@@ -97,18 +105,19 @@ function WeatherSystem:SetWeather(type: WeatherType)
 	end
 end
 
--- Auto cycle
+-- Auto cycle with random selection for unpredictability
 local cycleTime: number = 120
 local timer: number = 0
 
-local weatherOrder: {WeatherType} = {"Clear","Partly","Overcast","Storm"}
+-- Auto cycle with random selection for unpredictability
+local weatherOrder: {WeatherType} = {"Clear","Sunny","Partly","Hazy","Windy","Drizzle","Overcast","Rainy","Foggy","Snowy","Storm","Thunderstorm"}
 local weatherIndex: number = 1
 
 local function cycleWeather(dt: number)
 	timer += dt
 	if timer >= cycleTime then
 		timer = 0
-		weatherIndex = weatherIndex % #weatherOrder + 1
+		weatherIndex = math.random(1, #weatherOrder)
 		WeatherSystem:SetWeather(weatherOrder[weatherIndex])
 	end
 end
