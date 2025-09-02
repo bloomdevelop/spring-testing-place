@@ -37,7 +37,8 @@ function Process:Add(Character: Model, IgnoreList: { Instance }): ()
 	CharacterIndex = table.find(InitedCharacters, Character)
 
 	for i, v in AttachmentPositions do
-		local Attachment = Instance.new(`Attachment`, Torso)
+		local Attachment = Instance.new(`Attachment`)
+		Attachment.Parent = Torso
 		Attachment.Position = v
 		Attachment.Name = i
 		Attachments[i] = Attachment
