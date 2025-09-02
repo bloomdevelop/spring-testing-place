@@ -16,11 +16,11 @@ end
 -- Config
 local DAY_LENGTH = 600
 local START_HOUR = 10 -- start near sunrise for easier testing
-local TURBIDITY = 10.0
+local TURBIDITY = 3.0
 local RAYLEIGH_SCALE = 0.8
 local MIE_SCALE = 0.7
 local OZONE_STRENGTH = 0.5
-local EXPOSURE = 1.0
+local EXPOSURE = 2.0
 local NIGHT_DENSITY = 0.8
 local DAY_DENSITY = 0.12
 local NIGHT_BRIGHTNESS = 0.0
@@ -81,7 +81,7 @@ local startTick = tick()
 local startOffset = (START_HOUR % 24) / 24
 
 -- keep last applied color for smoothing
-local lastColor = Vector3.new(0.03, 0.04, 0.08)
+local lastColor = Vector3.new(0.005, 0.01, 0.02)
 
 local function updateAtmosphere()
 	local elapsed = tick() - startTick
@@ -105,9 +105,9 @@ local function updateAtmosphere()
 	local mieAttG = math.exp(-mieVec.Y * MIE_SCALE * TURBIDITY * am)
 	local mieAttB = math.exp(-mieVec.Z * MIE_SCALE * TURBIDITY * am)
 
-	local scatR = (1 - rayAttR) * 0.85 + (1 - mieAttR) * 0.65
-	local scatG = (1 - rayAttG) * 0.95 + (1 - mieAttG) * 0.65
-	local scatB = (1 - rayAttB) * 1.15 + (1 - mieAttB) * 0.55
+	local scatR = (1 - rayAttR) * 1.0 + (1 - mieAttR) * 0.3
+	local scatG = (1 - rayAttG) * 1.0 + (1 - mieAttG) * 0.3
+	local scatB = (1 - rayAttB) * 1.0 + (1 - mieAttB) * 0.3
 
 	local oR = ozoneAbsorptionFactor(lambda.R, am)
 	local oG = ozoneAbsorptionFactor(lambda.G, am)
@@ -121,14 +121,14 @@ local function updateAtmosphere()
 	local sunsetBoost = (1 - math.abs(cosZenith))
 
 	local colorVec = Vector3.new(
-		combinedR * (0.7 * dayWeight + 0.7 * sunsetBoost),
-		combinedG * (0.9 * dayWeight + 0.6 * sunsetBoost),
-		combinedB * (1.1 * dayWeight + 0.3 * sunsetBoost)
+		combinedR * (0.6 * dayWeight + 0.8 * sunsetBoost),
+		combinedG * (0.8 * dayWeight + 0.6 * sunsetBoost),
+		combinedB * (1.0 * dayWeight + 0.2 * sunsetBoost)
 	)
 
 	local mapped = tonemap(colorVec * EXPOSURE, EXPOSURE)
 	if not aboveHorizon then
-		mapped = Vector3.new(0.035, 0.045, 0.08)
+		mapped = Vector3.new(0.005, 0.01, 0.02)
 	end
 
 	local maxC = math.max(mapped.X, mapped.Y, mapped.Z, 1e-6)
